@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>تحميل فيديو من اليوتيوب باستخدام AJAX</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#download-btn').on('click', function() {
+                var videoId = $('#video-id').val();
+                if (videoId) {
+                    $.ajax({
+                        url: 'https://www.youtube.com/get_video_info?video_id=' + videoId,
+                        dataType: 'text',
+                        success: function(data) {
+                            var videoInfo = parseQueryString(data);
+                            var videoURL = decodeURIComponent(videoInfo.url_encoded_fmt_stream_map.split(',')[0].split('url=')[1]);
+                            window.location.href = videoURL;
+                        },
+                        error: function() {
+                            console.log('حدث خطأ ما أثناء تحميل معلومات الفيديو.');
+                        }
+                    });
+                } else {
+                    console.log('يرجى إدخال معرف الفيديو.');
+                }
+            });
+        });
+
+        function parseQueryString(queryString) {
+            var query = {};
+            var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
+            for (var i = 0; i < pairs.length; i++) {
+                var pair = pairs[i].split('=');
+                query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+            }
+            return query;
+        }
+    </script>
+</head>
+<body>
+<h1>تحميل فيديو من اليوتيوب باستخدام AJAX</h1>
+<input type="text" id="video-id" placeholder="أدخل معرف الفيديو">
+<button id="download-btn">تحميل</button>
+</body>
+</html>
